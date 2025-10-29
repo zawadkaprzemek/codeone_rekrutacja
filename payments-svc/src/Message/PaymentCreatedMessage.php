@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-class PaymentCreatedEvent
+class PaymentCreatedMessage
 {
     public function __construct(
-        public int $paymentId,
+        public int $id,
         public string $amount
     ) {}
 }

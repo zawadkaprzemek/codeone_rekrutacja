@@ -23,7 +23,7 @@
 
 5. Załaduj początkowe dane do bazy danych
 ```bash
-  docker compose run --rm payments-svc bash
+  docker exec -it payments-svc bash
   php bin/console doctrine:schema:update --force
   php bin/console doctrine:fixtures:load -y 
 ```

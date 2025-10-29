@@ -1,0 +1,54 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  payments-svc:
+    build: ./payments-svc
+    container_name: payments-svc
+    environment:
+      - DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
+      - MESSENGER_TRANSPORT_DSN=amqp://guest:guest@rabbitmq:5672/%2f/messages
+    volumes:
+      - ./payments-svc:/var/www/html
+    ports:
+      - "9000:8000"
+    command: php -S 0.0.0.0:8000 -t public
+    depends_on:
+      - rabbitmq
+
+  notifications-svc:
+    build: ./notifications-svc
+    container_name: notifications-svc
+    volumes:
+      - ./notifications-svc:/app
+    depends_on:
+      - rabbitmq
+    command: [ "php", "consumer.php" ]
+
+  frontend:
+    build: ./frontend-vue
+    container_name: frontend
+    volumes:
+      - ./frontend-vue:/app
+      - /app/node_modules  # <== bardzo ważne, żeby nie nadpisać node_modules z hosta
+    ports:
+      - "5173:5173"
+    command: [ "npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173" ]
+    restart: always
+
+
+  nginx:
+    image: nginx:latest
+    container_name: api-gateway
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/api-gateway.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - payments-svc
+      - frontend
+    restart: always

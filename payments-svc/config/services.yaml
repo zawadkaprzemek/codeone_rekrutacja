@@ -20,7 +20,8 @@ services:
     # please note that last definitions always *replace* previous ones
 
 
-    App\DataPersister\PaymentDataPersister:
-        decorates: 'api_platform.doctrine.orm.data_persister'
+    App\State\PaymentProcessor:
+        decorates: 'api_platform.doctrine.orm.state.persist_processor'
         arguments:
-            $decorated: '@App\DataPersister\PaymentDataPersister.inner'
+            $decorated: '@App\State\PaymentProcessor.inner'
+            $publisher: '@App\Service\PaymentEventPublisher'

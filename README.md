@@ -23,10 +23,24 @@
 
 5. Załaduj początkowe dane do bazy danych
 ```bash
-  docker compose run --rm payments-svc bash
+  docker exec -it payments-svc bash
+  composer install
   php bin/console doctrine:schema:update --force
-  php bin/console doctrine:fixtures:load -y 
+  php bin/console doctrine:fixtures:load
+  wpisz yes dla potwierdzenia
 ```
 
-6. Otwórz stronę w swojej przeglądarce
+6. Wygeneruj klucze do JWT
+```bash
+    mkdir -p config/jwt
+    openssl genrsa -out config/jwt/private.pem -aes256 4096
+    openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem 
+```
+Podaj hasło (np. CODEONE).
+Potem wklej je w .env 
+```dotenv
+JWT_PASSPHRASE=myjwtpass
+```
+
+7. Otwórz stronę w swojej przeglądarce
    http://localhost:8080/

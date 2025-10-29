@@ -1,0 +1,4 @@
+/payments-svc/var
+/node_modules
+/vendor
+/*.log

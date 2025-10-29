@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Message\PaymentCreatedEvent;
+use App\Message\PaymentCreatedMessage;
 use App\Repository\PaymentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +31,7 @@ class WebhookController extends AbstractController
 
         $payment->setStatus($data['status'] ?? 'unknown');
 
-        $this->bus->dispatch(new PaymentCreatedEvent($payment->getId(), $payment->getAmount()));
+        $this->bus->dispatch(new PaymentCreatedMessage($payment->getId(), $payment->getAmount()));
 
         return new Response('OK', 200);
     }
